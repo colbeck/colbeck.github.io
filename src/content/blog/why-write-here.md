@@ -1,7 +1,7 @@
 ---
-title: "Diffusion and measure transport for bayesian inverse problems"
+title: "Diffusion for bayesian inverse problems"
 date: 2026-05-19
-summary: "A starter post for general thoughts on AI, research directions, and ideas worth developing."
+summary: ""
 tags: ["writing", "research"]
 ---
 

@@ -1,0 +1,202 @@
+<figure class="research-transport" aria-label="Schematic transport from a Gaussian source to a multimodal target">
+  <div class="research-transport-frame">
+    <img class="mixture-contours mixture-contours-light" src="/assets/research/mixture-contours-light.svg" alt="" />
+    <img class="mixture-contours mixture-contours-dark" src="/assets/research/mixture-contours-dark.svg" alt="" />
+    <canvas></canvas>
+  </div>
+  <figcaption>A schematic transport from a simple source distribution to a structured target distribution.</figcaption>
+</figure>
+
+<script>
+  const figures = document.querySelectorAll<HTMLElement>(".research-transport");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function mulberry32(seed: number) {
+    return () => {
+      let t = (seed += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function gaussian(random: () => number) {
+    const u1 = Math.max(random(), 1e-8);
+    const u2 = random();
+    const radius = Math.sqrt(-2 * Math.log(u1));
+    return {
+      x: radius * Math.cos(Math.PI * 2 * u2),
+      y: radius * Math.sin(Math.PI * 2 * u2),
+    };
+  }
+
+  function clamp(value: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function easeInOut(t: number) {
+    return 0.5 - 0.5 * Math.cos(Math.PI * t);
+  }
+
+  function triangleWave(t: number) {
+    return 1 - Math.abs(2 * (t - Math.floor(t)) - 1);
+  }
+
+  function cubicBezier(
+    p0: { x: number; y: number },
+    p1: { x: number; y: number },
+    p2: { x: number; y: number },
+    p3: { x: number; y: number },
+    t: number
+  ) {
+    const u = 1 - t;
+    const b0 = u * u * u;
+    const b1 = 3 * u * u * t;
+    const b2 = 3 * u * t * t;
+    const b3 = t * t * t;
+    return {
+      x: b0 * p0.x + b1 * p1.x + b2 * p2.x + b3 * p3.x,
+      y: b0 * p0.y + b1 * p1.y + b2 * p2.y + b3 * p3.y,
+    };
+  }
+
+  function readTransportColors(element: HTMLElement) {
+    const styles = getComputedStyle(element);
+    return {
+      ink: styles.getPropertyValue("--transport-ink").trim() || "rgba(31, 37, 40, 0.52)",
+      dot: styles.getPropertyValue("--transport-dot").trim() || "rgba(47, 125, 117, 0.64)",
+      source: styles.getPropertyValue("--transport-source").trim() || "rgba(77, 118, 133, 0.2)",
+    };
+  }
+
+  const targetModes = [
+    { x: 0.65, y: 0.36, sx: 0.055, sy: 0.065 },
+    { x: 0.77, y: 0.28, sx: 0.062, sy: 0.052 },
+    { x: 0.84, y: 0.48, sx: 0.052, sy: 0.068 },
+    { x: 0.73, y: 0.65, sx: 0.067, sy: 0.052 },
+    { x: 0.6, y: 0.56, sx: 0.055, sy: 0.062 },
+  ];
+
+  function makeParticles() {
+    const random = mulberry32(8173);
+    return Array.from({ length: 140 }, (_, index) => {
+      const sourceNoise = gaussian(random);
+      const source = {
+        x: clamp(0.22 + 0.055 * sourceNoise.x, 0.08, 0.39),
+        y: clamp(0.5 + 0.105 * sourceNoise.y, 0.2, 0.8),
+      };
+
+      const mode = targetModes[index % targetModes.length];
+      const targetNoise = gaussian(random);
+      const target = {
+        x: clamp(mode.x + mode.sx * 0.62 * targetNoise.x, 0.48, 0.94),
+        y: clamp(mode.y + mode.sy * 0.62 * targetNoise.y, 0.15, 0.84),
+      };
+
+      const lift = (index % 2 === 0 ? -1 : 1) * (0.07 + 0.035 * random());
+      return {
+        source,
+        target,
+        controlA: {
+          x: source.x + 0.22 + 0.025 * random(),
+          y: source.y + lift,
+        },
+        controlB: {
+          x: target.x - 0.22 - 0.025 * random(),
+          y: target.y - lift * 0.72,
+        },
+        phase: random() * Math.PI * 2,
+        radius: 1.65,
+      };
+    });
+  }
+
+  function setup(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    return ctx;
+  }
+
+  function drawEllipseContours(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    rx: number,
+    ry: number,
+    color: string,
+    levels: number
+  ) {
+    for (let i = 0; i < levels; i += 1) {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx * (1 + i * 0.34), ry * (1 + i * 0.34), -0.18, 0, Math.PI * 2);
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.78 - i * 0.085;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function draw(element: HTMLElement, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, particles: ReturnType<typeof makeParticles>, time: number) {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const colors = readTransportColors(element);
+    const cycle = triangleWave(time * 0.000055);
+    const t = easeInOut(cycle);
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    drawEllipseContours(ctx, width * 0.22, height * 0.5, width * 0.052, height * 0.105, colors.source, 5);
+
+    for (const particle of particles) {
+      const localT = clamp(t + 0.018 * Math.sin(particle.phase + time * 0.001), 0, 1);
+      const eased = easeInOut(localT);
+      const point = cubicBezier(particle.source, particle.controlA, particle.controlB, particle.target, eased);
+      const alpha = 0.38 + 0.34 * eased;
+
+      ctx.beginPath();
+      ctx.arc(point.x * width, point.y * height, particle.radius, 0, Math.PI * 2);
+      ctx.fillStyle = colors.dot.replace(/[\d.]+\)$/u, `${alpha})`);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = colors.ink;
+    ctx.font = "12px ui-sans-serif, system-ui, sans-serif";
+    ctx.fillText("source", width * 0.14, height * 0.83);
+    ctx.fillText("target", width * 0.77, height * 0.83);
+  }
+
+  for (const figure of figures) {
+    const canvas = figure.querySelector("canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) continue;
+
+    const ctx = setup(canvas);
+    if (!ctx) continue;
+
+    const particles = makeParticles();
+    const render = (time: number) => draw(figure, canvas, ctx, particles, time);
+
+    if (reducedMotion.matches) {
+      render(3600);
+    } else {
+      const animate = (time: number) => {
+        render(time);
+        requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+    }
+  }
+</script>

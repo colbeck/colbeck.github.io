@@ -38,6 +38,12 @@ $$
 
 Put static files in `public/assets/`. Post images and GIFs can go in `public/assets/posts/`.
 
+Regenerate the research-page Gaussian-mixture contour SVGs with:
+
+```bash
+python3 scripts/generate_mixture_contours.py
+```
+
 ## Portrait
 
 Put your homepage photo at:
