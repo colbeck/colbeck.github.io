@@ -1,0 +1,174 @@
+---
+interface Props {
+  variant?: "flow" | "contours";
+}
+
+const { variant = "flow" } = Astro.props;
+---
+
+<div class="hero-background" data-variant={variant} aria-hidden="true">
+  <canvas></canvas>
+</div>
+
+<script>
+  const backgrounds = document.querySelectorAll<HTMLElement>(".hero-background");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  const clampPixelRatio = () => Math.min(window.devicePixelRatio || 1, 2);
+
+  function readColors(element: HTMLElement) {
+    const styles = getComputedStyle(element);
+    return {
+      line: styles.getPropertyValue("--math-line").trim() || "rgba(47, 125, 117, 0.22)",
+      lineSoft: styles.getPropertyValue("--math-line-soft").trim() || "rgba(77, 118, 133, 0.12)",
+      dot: styles.getPropertyValue("--math-dot").trim() || "rgba(47, 125, 117, 0.32)",
+    };
+  }
+
+  function setupCanvas(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = clampPixelRatio();
+      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+      canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    return { ctx, resize };
+  }
+
+  function drawFlow(element: HTMLElement, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, time: number) {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const colors = readColors(element);
+    const phase = time * 0.00012;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const field = (x: number, y: number) => {
+      const nx = (x / width - 0.5) * 2;
+      const ny = (y / height - 0.5) * 2;
+      return {
+        x: Math.cos(ny * 2.4 + phase * 2.1) * 0.78 + Math.sin((nx + ny) * 1.7 - phase) * 0.34,
+        y: Math.sin(nx * 2.2 - phase * 1.7) * 0.7 + Math.cos((nx - ny) * 1.5 + phase) * 0.28,
+      };
+    };
+
+    ctx.strokeStyle = colors.lineSoft;
+    ctx.lineWidth = 1;
+    const rows = 9;
+    const cols = 7;
+
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        const seedX = (col + 0.35 + 0.22 * Math.sin(row * 1.8)) * (width / cols);
+        const seedY = (row + 0.42 + 0.18 * Math.cos(col * 1.4)) * (height / rows);
+        let x = seedX;
+        let y = seedY;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let step = 0; step < 22; step += 1) {
+          const v = field(x, y);
+          x += v.x * 8.5;
+          y += v.y * 8.5;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    ctx.fillStyle = colors.dot;
+    const particles = 36;
+    for (let i = 0; i < particles; i += 1) {
+      const base = i / particles;
+      const x = ((base * 1.73 + phase * 0.08) % 1) * width;
+      const y = ((base * 2.31 + 0.18 * Math.sin(phase * 6 + i)) % 1) * height;
+      const v = field(x, y);
+      const px = x + v.x * Math.sin(time * 0.0007 + i) * 22;
+      const py = y + v.y * Math.cos(time * 0.0006 + i) * 18;
+
+      ctx.beginPath();
+      ctx.arc(px, py, 1.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawContours(element: HTMLElement, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, time: number) {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const colors = readColors(element);
+    const phase = time * 0.00018;
+    const centers = [
+      { x: 0.25 + 0.025 * Math.sin(phase * 2.2), y: 0.32 + 0.02 * Math.cos(phase * 1.7), sx: 0.18, sy: 0.12 },
+      { x: 0.66 + 0.02 * Math.cos(phase * 1.5), y: 0.38 + 0.03 * Math.sin(phase * 1.8), sx: 0.16, sy: 0.2 },
+      { x: 0.48 + 0.02 * Math.sin(phase * 1.3), y: 0.72 + 0.018 * Math.cos(phase * 2.4), sx: 0.22, sy: 0.13 },
+    ];
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    centers.forEach((center, centerIndex) => {
+      const cx = center.x * width;
+      const cy = center.y * height;
+      const rx = center.sx * width;
+      const ry = center.sy * height;
+
+      for (let level = 0; level < 6; level += 1) {
+        const scale = 0.48 + level * 0.19;
+        const wobble = 0.035 + level * 0.006;
+        const points = 140;
+
+        ctx.beginPath();
+        for (let i = 0; i <= points; i += 1) {
+          const theta = (i / points) * Math.PI * 2;
+          const radial =
+            1 +
+            wobble * Math.sin(theta * 3 + phase * 5 + centerIndex) +
+            wobble * 0.55 * Math.cos(theta * 5 - phase * 3.2);
+          const x = cx + Math.cos(theta) * rx * scale * radial;
+          const y = cy + Math.sin(theta) * ry * scale * radial;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        ctx.strokeStyle = level % 2 === 0 ? colors.line : colors.lineSoft;
+        ctx.lineWidth = 0.9;
+        ctx.stroke();
+      }
+    });
+  }
+
+  for (const element of backgrounds) {
+    const canvas = element.querySelector("canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) continue;
+
+    const setup = setupCanvas(canvas);
+    if (!setup) continue;
+
+    const variant = element.dataset.variant === "contours" ? "contours" : "flow";
+    const render = (time: number) => {
+      if (variant === "contours") drawContours(element, canvas, setup.ctx, time);
+      else drawFlow(element, canvas, setup.ctx, time);
+    };
+
+    if (prefersReducedMotion.matches) {
+      render(0);
+    } else {
+      const animate = (time: number) => {
+        render(time);
+        requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+    }
+  }
+</script>

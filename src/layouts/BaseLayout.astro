@@ -1,0 +1,87 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Academic website of Cole Becker, a PhD student at MIT working on dynamical measure transport and sampling.",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://colebecker.me");
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/research/", label: "Research" },
+  { href: "/publications/", label: "Publications" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/tutorials/", label: "Tutorials" },
+  { href: "/notes/", label: "Notes" },
+  { href: "/assets/cv.pdf", label: "CV" },
+];
+
+function isActive(href: string) {
+  if (href === "/") return Astro.url.pathname === "/";
+  return Astro.url.pathname.startsWith(href);
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <script is:inline>
+      const storedTheme = localStorage.getItem("theme");
+      const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = storedTheme || preferredTheme;
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Cole Becker home">Cole Becker</a>
+      <div class="header-actions">
+        <nav class="site-nav" aria-label="Main navigation">
+          {
+            navItems.map((item) => (
+              <a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+          <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+        </button>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>Built with Astro. Hosted by GitHub Pages.</p>
+      <p>
+        <a href="mailto:colebecker@mit.edu">colebecker@mit.edu</a>
+      </p>
+    </footer>
+    <script>
+      const toggle = document.querySelector(".theme-toggle");
+
+      function setTheme(theme: string) {
+        document.documentElement.dataset.theme = theme;
+        localStorage.setItem("theme", theme);
+      }
+
+      toggle?.addEventListener("click", () => {
+        const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+    </script>
+  </body>
+</html>

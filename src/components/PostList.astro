@@ -1,0 +1,46 @@
+---
+interface Entry {
+  id: string;
+  data: {
+    title: string;
+    date: Date;
+    summary: string;
+    tags?: string[];
+  };
+}
+
+interface Props {
+  entries: Entry[];
+  basePath: string;
+}
+
+const { entries, basePath } = Astro.props;
+---
+
+<div class="post-list">
+  {
+    entries.map((entry) => (
+      <article class="post-card">
+        <div class="post-card-meta">
+          <time datetime={entry.data.date.toISOString()}>
+            {entry.data.date.toLocaleDateString("en", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              timeZone: "UTC",
+            })}
+          </time>
+        </div>
+        <h2>
+          <a href={`${basePath}/${entry.id}/`}>{entry.data.title}</a>
+        </h2>
+        <p>{entry.data.summary}</p>
+        {entry.data.tags && entry.data.tags.length > 0 && (
+          <ul class="tag-list" aria-label="Tags">
+            {entry.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        )}
+      </article>
+    ))
+  }
+</div>

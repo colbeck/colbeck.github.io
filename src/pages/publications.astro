@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const publications = [
+  {
+    title: "Selected publication title",
+    authors: "Cole Becker, Collaborators",
+    venue: "Preprint or venue, year",
+    summary: "Replace this placeholder with a short description of the result and why it matters.",
+    links: [
+      { label: "Paper", href: "#" },
+      { label: "Code", href: "#" },
+    ],
+  },
+  {
+    title: "Project or manuscript title",
+    authors: "Cole Becker, Collaborators",
+    venue: "In preparation",
+    summary: "Use this page for papers, preprints, project pages, slides, and code links.",
+    links: [{ label: "Notes", href: "/notes/" }],
+  },
+];
+
+const scholarUrl = "https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en";
+---
+
+<BaseLayout title="Publications | Cole Becker">
+  <section class="page-shell narrow-shell">
+    <p class="eyebrow">Publications</p>
+    <h1 class="page-title">Papers, preprints, and project pages.</h1>
+    <p class="lead">
+      This page is set up for selected papers and project links. A current publication list is also available on
+      <a href={scholarUrl}>Google Scholar</a>.
+    </p>
+    <div class="social-links" aria-label="Publication profiles">
+      <a href={scholarUrl}>🎓 Google Scholar</a>
+    </div>
+  </section>
+
+  <section class="page-shell section post-list">
+    {
+      publications.map((pub) => (
+        <article class="publication">
+          <h2>{pub.title}</h2>
+          <p>
+            <strong>{pub.authors}</strong>
+          </p>
+          <p>{pub.venue}</p>
+          <p>{pub.summary}</p>
+          <div class="publication-links">
+            {pub.links.map((link) => (
+              <a href={link.href}>{link.label}</a>
+            ))}
+          </div>
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroMathBackground from "../components/HeroMathBackground.astro";
+import PostList from "../components/PostList.astro";
+import ProfileVisual from "../components/ProfileVisual.astro";
+
+const byDate = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
+  b.data.date.valueOf() - a.data.date.valueOf();
+const blogPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(byDate).slice(0, 2);
+const tutorials = (await getCollection("tutorials", ({ data }) => !data.draft)).sort(byDate).slice(0, 2);
+const notes = (await getCollection("notes", ({ data }) => !data.draft)).sort(byDate).slice(0, 2);
+---
+
+<BaseLayout title="Cole Becker | MIT PhD Student">
+  <section class="page-shell hero">
+    <HeroMathBackground variant="contours" />
+    <div>
+      <p class="eyebrow">MIT PhD student</p>
+      <h1>Cole Becker</h1>
+      <p class="lead">
+        I am a third-year <strong>PhD student</strong> at LIDS at MIT, where I am grateful to be advised by
+        <a href="https://www.mit.edu/~parrilo/">Pablo Parrilo</a> and supported by the NSF GRFP fellowship. I also
+        work with <a href="https://asu.mit.edu/">Asu Ozdaglar</a> and
+        <a href="https://locomotion.csail.mit.edu/russt.html">Russ Tedrake</a>.
+      </p>
+      <p class="lead">
+        My research interests are broadly in learning algorithms for generative modeling and dynamical measure transport.
+        I am also interested in connections between sampling and optimization.
+      </p>
+      <p class="lead">
+        Before MIT, I was an undergraduate and master's student at Princeton University, where I was fortunate to work with
+        <a href="https://stella.to/">Bartolomeo Stellato</a> and <a href="https://aaa.princeton.edu/">Amir Ali Ahmadi</a>.
+      </p>
+      <div class="social-links" aria-label="External profiles">
+        <a href="https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en">🎓 Google Scholar</a>
+        <a href="https://x.com/colemobecker">𝕏 Twitter</a>
+        <a href="https://www.linkedin.com/in/cole-becker-559102129/">💼 LinkedIn</a>
+      </div>
+      <p class="email-line">✉️ colbeck [at] mit [dot] edu</p>
+    </div>
+    <ProfileVisual />
+  </section>
+
+  <section class="page-shell section">
+    <div class="section-header">
+      <h2>Recent Blog Posts</h2>
+      <p>Higher-level writing on AI, research directions, and ideas in progress.</p>
+    </div>
+    <PostList entries={blogPosts} basePath="/blog" />
+  </section>
+
+  <section class="page-shell section">
+    <div class="section-header">
+      <h2>Recent Tutorials</h2>
+      <p>Technical expository posts with math, figures, derivations, and implementation details.</p>
+    </div>
+    <PostList entries={tutorials} basePath="/tutorials" />
+  </section>
+
+  <section class="page-shell section">
+    <div class="section-header">
+      <h2>Recent Paper Notes</h2>
+      <p>Short summaries of papers, proof ideas, and questions worth returning to.</p>
+    </div>
+    <PostList entries={notes} basePath="/notes" />
+  </section>
+</BaseLayout>

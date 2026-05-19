@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes", ({ data }) => !data.draft);
+  return notes.map((note) => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+const authorText = note.data.authors.join(", ");
+---
+
+<PostLayout title={note.data.title} description={note.data.summary} date={note.data.date} eyebrow="Paper note" tags={note.data.tags}>
+  <p class="note-meta">
+    <strong>Authors:</strong> {authorText}
+    {note.data.venue && <> · <strong>Venue:</strong> {note.data.venue}</>}
+    {note.data.year && <> · <strong>Year:</strong> {note.data.year}</>}
+  </p>
+  <div class="inline-links">
+    {note.data.paperUrl && <a class="button secondary" href={note.data.paperUrl}>Paper</a>}
+    {note.data.codeUrl && <a class="button secondary" href={note.data.codeUrl}>Code</a>}
+  </div>
+  <Content />
+</PostLayout>
