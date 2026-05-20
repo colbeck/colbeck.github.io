@@ -314,9 +314,10 @@ h1 {
 
 .profile-visual {
   position: relative;
-  width: 100%;
+  width: min(100%, 380px);
+  justify-self: center;
   aspect-ratio: 1.35;
-  min-height: 320px;
+  min-height: 280px;
 }
 
 .portrait-frame {
@@ -591,7 +592,8 @@ h1 {
   }
 
   .profile-visual {
-    min-height: 260px;
+    width: min(100%, 320px);
+    min-height: 236px;
   }
 
   .research-transport-frame {

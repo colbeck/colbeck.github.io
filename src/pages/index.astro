@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroMathBackground from "../components/HeroMathBackground.astro";
 import PostList from "../components/PostList.astro";
 import ProfileVisual from "../components/ProfileVisual.astro";
 
@@ -12,7 +11,6 @@ const blogPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
 
 <BaseLayout title="Cole Becker | PhD Student">
   <section class="page-shell hero">
-    <HeroMathBackground variant="contours" />
     <div>
       <p class="eyebrow">PhD student</p>
       <h1>Cole Becker</h1>
