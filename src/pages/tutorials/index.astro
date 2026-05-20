@@ -1,19 +1,16 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PostList from "../../components/PostList.astro";
-
-const posts = (await getCollection("tutorials", ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <BaseLayout title="Tutorials | Cole Becker">
   <section class="page-shell narrow-shell">
     <p class="eyebrow">Tutorials</p>
-    <h1 class="page-title">Technical notes on transport, sampling, and control.</h1>
     <p class="lead">Longer expository posts with math, figures, derivations, and implementation details.</p>
   </section>
 
   <section class="page-shell section">
-    <PostList entries={posts} basePath="/tutorials" />
+    <div class="coming-soon">
+      <p class="eyebrow">Coming soon</p>
+    </div>
   </section>
 </BaseLayout>

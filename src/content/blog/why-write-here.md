@@ -1,18 +1,23 @@
 ---
 title: "Diffusion for bayesian inverse problems"
-date: 2026-05-19
+date: 2026-05-18
 summary: ""
 tags: ["writing", "research"]
 ---
 
 More recently, I've been interested in the problem of inference time adaptation of flow-based generative models. In particular I've been thinking a lot about this in terms of the bayesian inference sampling problem of sampling from the posterior given a prior and likelihood.
- $$ p(x\mid y) \propto p(y\mid x) p(x).$$ 
+
+$$ 
+p(x\mid y) \propto p(y\mid x) p(x).
+$$
+
 **Relationship to other modern bayesian inference problems**
 
 If you take a course on bayesian inference, you'll learn many methods of sampling from the posterior and assumptions under which some methods are more or less preferable. One thing this discussion clarified for me, was *the special case assumptions* we have been operating under in this regime, and how they are different from the assumptions that are made in other bayesian inference setups. To put simply we have
 - $p(x)$ prior
 - $p(y\mid x)$ likelihood
 - $p(x\mid y)$ posterior
+
 MCMC methods assume we have access to the prior and likelihood, and thus have an un-normalized expression for the posterior. They produce approximate samples for the posterior using these expressions. Simulation based inference (SBI) addresses a different problem, in particular one where I have access to a prior, and ability only to sample from likelihoods. **Our problem** is almost the reverse: specifically how to sample from the posterior distribution $p(x\mid y)$ assuming access to likelihood $p(y\mid x)$ and its gradients, and a sampler (in our case via diffusion) for $p(x)$.
 
 **Relationship to classical inverse problems**
@@ -48,4 +53,3 @@ Suppose our measurements are simple linear measurements $$y = Ax + \epsilon,$$on
 	1. some MAP estimate of $p(x\mid y) \propto p(y\mid x) p(x)$
 	2. sample from $p(x\mid y)$ 
 
-**Moving back to our problem**
