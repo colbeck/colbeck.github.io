@@ -4,6 +4,9 @@ import remarkMath from "remark-math";
 
 export default defineConfig({
   site: "https://colebecker.me",
+  build: {
+    assets: "assets",
+  },
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
