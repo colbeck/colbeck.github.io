@@ -106,9 +106,37 @@ p {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 720;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.brand .logo-mark {
+  display: block;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+
+.logo-mark-field {
+  fill: var(--paper);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.logo-mark-primary {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand:hover .logo-mark-primary {
+  stroke: var(--accent);
 }
 
 .site-nav {

@@ -1,0 +1,13 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = "Logo mark" } = Astro.props;
+---
+
+<svg class="logo-mark" viewBox="0 0 64 64" role="img" aria-label={title}>
+  <rect class="logo-mark-field" x="7" y="7" width="50" height="50" rx="12" />
+  <path class="logo-mark-primary" d="M45.3 21.2c-9.2-5.2-22-2.7-27.2 7-5.8 10.9.7 22.8 13.1 23.4 3.8.2 7.5-.6 10.9-2.3" />
+  <path class="logo-mark-primary" d="M40.2 14.9l5.5 6-6.6 4.2" />
+</svg>
