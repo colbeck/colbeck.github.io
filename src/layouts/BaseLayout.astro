@@ -6,14 +6,17 @@ import LogoMark from "../components/LogoMark.astro";
 interface Props {
   title: string;
   description?: string;
+  structuredData?: Record<string, unknown>;
 }
 
 const {
   title,
-  description = "Academic website of Cole Becker, a PhD student at MIT working on dynamical measure transport and sampling.",
+  description = "Cole Becker is a PhD student at MIT LIDS working on dynamical measure transport, sampling, generative modeling, optimization, and control.",
+  structuredData,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://colebecker.me");
+const socialImage = new URL("/assets/profile.jpg", Astro.site ?? "https://colebecker.me");
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/research/", label: "Research" },
@@ -37,8 +40,20 @@ function isActive(href: string) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cole Becker" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <script is:inline>
       const storedTheme = localStorage.getItem("theme");
       const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";

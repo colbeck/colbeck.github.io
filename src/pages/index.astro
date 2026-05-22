@@ -7,9 +7,53 @@ import ProfileVisual from "../components/ProfileVisual.astro";
 const byDate = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
   b.data.date.valueOf() - a.data.date.valueOf();
 const blogPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(byDate).slice(0, 2);
+
+const homepageDescription =
+  "Cole Becker is a PhD student at MIT LIDS working on dynamical measure transport, sampling, generative modeling, optimization, and control.";
+
+const personStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://colebecker.me/#cole-becker",
+  name: "Cole Becker",
+  url: "https://colebecker.me/",
+  image: "https://colebecker.me/assets/profile.jpg",
+  jobTitle: "PhD student",
+  affiliation: [
+    {
+      "@type": "CollegeOrUniversity",
+      name: "Massachusetts Institute of Technology",
+      alternateName: "MIT",
+      sameAs: "https://www.mit.edu/",
+    },
+    {
+      "@type": "Organization",
+      name: "MIT Laboratory for Information and Decision Systems",
+      alternateName: "MIT LIDS",
+      sameAs: "https://lids.mit.edu/",
+    },
+  ],
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "Princeton University",
+    sameAs: "https://www.princeton.edu/",
+  },
+  sameAs: [
+    "https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en",
+    "https://www.linkedin.com/in/cole-becker-559102129/",
+    "https://x.com/colemobecker",
+  ],
+  knowsAbout: [
+    "Dynamical measure transport",
+    "Sampling",
+    "Generative modeling",
+    "Optimization",
+    "Control",
+  ],
+};
 ---
 
-<BaseLayout title="Cole Becker | PhD Student">
+<BaseLayout title="Cole Becker | MIT PhD Student" description={homepageDescription} structuredData={personStructuredData}>
   <section class="page-shell hero">
     <div>
       <p class="eyebrow">PhD student</p>
