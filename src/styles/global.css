@@ -16,6 +16,9 @@
   --tag-text: #385f61;
   --prose: #313a3d;
   --quote: #3f5559;
+  --theorem: #7156a5;
+  --theorem-soft: rgba(113, 86, 165, 0.08);
+  --theorem-line: rgba(113, 86, 165, 0.28);
   --code-bg: #f6f5f1;
   --math-line: rgba(47, 125, 117, 0.2);
   --math-line-soft: rgba(77, 118, 133, 0.11);
@@ -49,6 +52,9 @@
   --tag-text: #bfe3dc;
   --prose: #d8dfdc;
   --quote: #c2d8d4;
+  --theorem: #c2a7f2;
+  --theorem-soft: rgba(194, 167, 242, 0.1);
+  --theorem-line: rgba(194, 167, 242, 0.32);
   --code-bg: #1a201e;
   --math-line: rgba(141, 207, 196, 0.2);
   --math-line-soft: rgba(159, 199, 212, 0.11);
@@ -539,6 +545,16 @@ h1 {
   font-size: 1.12rem;
 }
 
+.prose hr {
+  margin: 44px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.prose hr + h2 {
+  margin-top: 36px;
+}
+
 .prose p,
 .prose ul,
 .prose ol {
@@ -555,6 +571,34 @@ h1 {
   padding: 2px 0 2px 18px;
   color: var(--quote);
   border-left: 3px solid var(--accent);
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child) {
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child) > p:first-child {
+  margin-top: 0;
+  color: var(--ink);
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child) > ol:last-child {
+  margin-bottom: 0;
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child):has(> .katex-display) {
+  color: var(--prose);
+  background: var(--theorem-soft);
+  border-color: var(--theorem-line);
+  border-left-color: var(--theorem);
+}
+
+.prose blockquote:has(> p:first-child > strong:first-child):has(> .katex-display) > p:first-child {
+  color: var(--theorem);
 }
 
 .prose pre {
