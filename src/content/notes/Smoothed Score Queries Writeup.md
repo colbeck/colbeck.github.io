@@ -8,6 +8,7 @@ summary: "How smoothed-score queries improve the condition-number dependence of 
 tags: ["sampling"]
 paperUrl: "https://arxiv.org/pdf/2605.27769"
 ---
+This is a recent work by Jingbo Liu I found to be very thought-provoking: maybe we can use the score function for something other than diffusion-based sampling! Below I try to summarize my main takeaways.
 
 ## 1. Gaussian Sampling Setup
 
