@@ -1,48 +1,29 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ResearchTransportAnimation from "../components/ResearchTransportAnimation.astro";
+import PublicationList from "../components/PublicationList.astro";
 ---
 
 <BaseLayout
   title="Research | Cole Becker"
-  description="Research by Cole Becker, an MIT PhD student working on dynamical measure transport, sampling, optimization, and control."
+  description="Research and publications by Cole Becker on diffusion sampling, generative modeling, optimization, and control."
 >
-  <section class="page-shell narrow-shell">
-    <p class="eyebrow">Research</p>
-    <h1 class="page-title">Dynamical views of transport, sampling, and control.</h1>
+  <section class="page-shell">
+    <h1 class="page-title">Research</h1>
     <p class="lead">
-      My interests center on how probability measures move under dynamics, and how those dynamics can be designed,
-      analyzed, and computed for sampling and related inference problems.
+      I study how probability distributions move, and how to use those dynamics to build better generative models.
+      My work connects sampling and measure transport with optimization and control.
+    </p>
+    <p class="lead">
+      My current projects focus on accelerating diffusion sampling through the joint design of noise schedules and
+      solvers, adapting pretrained models to new objectives, and learning robot policies from simulated and real data.
     </p>
   </section>
 
-  <section class="page-shell section">
-    <ResearchTransportAnimation />
-  </section>
-
-  <section class="page-shell section">
-    <div class="grid">
-      <article class="theme">
-        <h3>Dynamical Measure Transport</h3>
-        <p>
-          I am interested in continuous-time formulations of measure transport, including velocity-field descriptions,
-          flow maps, variational structure, and computational methods for moving mass between distributions.
-        </p>
-      </article>
-      <article class="theme">
-        <h3>Sampling</h3>
-        <p>
-          Sampling problems provide a natural setting where transport, stochastic dynamics, and optimization meet. I am
-          especially interested in methods that make the geometry of the target distribution explicit.
-        </p>
-      </article>
-      <article class="theme">
-        <h3>Optimization and Control</h3>
-        <p>
-          Many transport and sampling questions have useful control-theoretic or optimization-theoretic formulations.
-          These viewpoints are part of my broader collaboration with Pablo Parrilo, Asu Ozdaglar, and Russ Tedrake.
-        </p>
-      </article>
+  <section class="page-shell section" id="publications" aria-labelledby="publications-heading">
+    <div class="section-header">
+      <h2 id="publications-heading">Publications</h2>
+      <a href="https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en">Google Scholar →</a>
     </div>
+    <PublicationList />
   </section>
 </BaseLayout>

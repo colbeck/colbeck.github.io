@@ -1,6 +1,8 @@
 ---
 interface Entry {
   id: string;
+  href?: string;
+  label?: string;
   data: {
     title: string;
     date: Date;
@@ -11,10 +13,11 @@ interface Entry {
 
 interface Props {
   entries: Entry[];
-  basePath: string;
+  basePath?: string;
+  headingLevel?: "h2" | "h3";
 }
 
-const { entries, basePath } = Astro.props;
+const { entries, basePath = "/blog", headingLevel: Heading = "h2" } = Astro.props;
 ---
 
 <div class="post-list">
@@ -22,6 +25,7 @@ const { entries, basePath } = Astro.props;
     entries.map((entry) => (
       <article class="post-card">
         <div class="post-card-meta">
+          {entry.label && <span>{entry.label}</span>}
           <time datetime={entry.data.date.toISOString()}>
             {entry.data.date.toLocaleDateString("en", {
               year: "numeric",
@@ -31,15 +35,10 @@ const { entries, basePath } = Astro.props;
             })}
           </time>
         </div>
-        <h2>
-          <a href={`${basePath}/${entry.id}/`}>{entry.data.title}</a>
-        </h2>
+        <Heading>
+          <a href={entry.href ?? `${basePath}/${entry.id}/`}>{entry.data.title}</a>
+        </Heading>
         <p>{entry.data.summary}</p>
-        {entry.data.tags && entry.data.tags.length > 0 && (
-          <ul class="tag-list" aria-label="Tags">
-            {entry.data.tags.map((tag) => <li>{tag}</li>)}
-          </ul>
-        )}
       </article>
     ))
   }

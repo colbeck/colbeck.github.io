@@ -1,5 +1,5 @@
 ---
-title: "Diffusion for bayesian inverse problems"
+title: "Diffusion for Bayesian inverse problems"
 date: 2026-05-18
 summary: "Notes on diffusion models, Bayesian inverse problems, posterior sampling, and generative priors."
 tags: ["writing", "research"]

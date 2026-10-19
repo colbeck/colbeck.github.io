@@ -1,0 +1,52 @@
+---
+import { publications, type Publication } from "../data/publications";
+
+interface Props {
+  entries?: Publication[];
+  headingLevel?: "h2" | "h3";
+  showSummary?: boolean;
+}
+
+const { entries = publications, headingLevel: Heading = "h3", showSummary = true } = Astro.props;
+---
+
+<div class="publication-list">
+  {entries.map((publication) => (
+    <article class:list={["publication", { "publication-with-image": publication.image }]}>
+      {publication.image && publication.links[0] && (
+        <a class="publication-image" href={publication.links[0].href} aria-label={`Read ${publication.title}`}>
+          <img
+            src={publication.image.src}
+            alt={publication.image.alt}
+            width={publication.image.width}
+            height={publication.image.height}
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+      )}
+      <div class="publication-details">
+        <Heading>
+          {publication.links[0] ? <a href={publication.links[0].href}>{publication.title}</a> : publication.title}
+        </Heading>
+        {publication.authors?.length && (
+          <p class="publication-authors">
+            {publication.authors.map((author, index) => (
+              <>
+                {index > 0 && ", "}
+                {author === "Cole Becker" ? <strong>{author}</strong> : author}
+              </>
+            ))}
+          </p>
+        )}
+        <p class="publication-venue">{publication.venue}</p>
+        {showSummary && publication.summary && <p>{publication.summary}</p>}
+        {publication.links.length > 0 && (
+          <div class="publication-links">
+            {publication.links.map((link) => <a href={link.href}>{link.label}</a>)}
+          </div>
+        )}
+      </div>
+    </article>
+  ))}
+</div>

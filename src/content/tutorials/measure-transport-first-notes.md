@@ -1,5 +1,6 @@
 ---
 title: "First Notes on Dynamical Measure Transport"
+draft: true
 date: 2026-05-18
 summary: "A starter tutorial post showing how math, figures, and exposition will look on the site."
 tags: ["transport", "sampling", "tutorial"]

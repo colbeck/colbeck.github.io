@@ -11,7 +11,7 @@ interface Props {
 
 const {
   title,
-  description = "Cole Becker is a PhD student at MIT LIDS working on dynamical measure transport, sampling, generative modeling, optimization, and control.",
+  description = "Cole Becker is a PhD candidate at MIT LIDS working on sampling, generative modeling, and optimization.",
   structuredData,
 } = Astro.props;
 
@@ -19,7 +19,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://colebecker.
 const socialImage = new URL("/assets/profile.jpg", Astro.site ?? "https://colebecker.me");
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/research/", label: "Research" },
   { href: "/publications/", label: "Publications" },
   { href: "/blog/", label: "Blog" },
   { href: "/tutorials/", label: "Tutorials" },
@@ -34,7 +33,7 @@ function isActive(href: string) {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,12 +54,15 @@ function isActive(href: string) {
     <meta name="twitter:image" content={socialImage} />
     {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <script is:inline>
-      const storedTheme = localStorage.getItem("theme");
-      const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      document.documentElement.dataset.theme = storedTheme || preferredTheme;
+      try {
+        if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark";
+      } catch {
+        // Keep light mode when browser storage is unavailable.
+      }
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="site-header">
       <a class="brand" href="/" aria-label="Cole Becker home">
         <LogoMark title="Cole Becker logo" />
@@ -81,20 +83,34 @@ function isActive(href: string) {
         </button>
       </div>
     </header>
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <footer class="site-footer">
-      <p>Built with Astro. Hosted by GitHub Pages.</p>
+      <p>Cole Becker · MIT</p>
+      <a href="mailto:colbeck@mit.edu">colbeck@mit.edu</a>
     </footer>
     <script>
       const toggle = document.querySelector(".theme-toggle");
 
-      function setTheme(theme: string) {
-        document.documentElement.dataset.theme = theme;
-        localStorage.setItem("theme", theme);
+      function updateToggleLabel() {
+        const isDark = document.documentElement.dataset.theme === "dark";
+        const label = `Switch to ${isDark ? "light" : "dark"} mode`;
+        toggle?.setAttribute("aria-label", label);
+        toggle?.setAttribute("title", label);
       }
 
+      function setTheme(theme: string) {
+        document.documentElement.dataset.theme = theme;
+        try {
+          localStorage.setItem("theme", theme);
+        } catch {
+          // Theme switching still works without persistence.
+        }
+        updateToggleLabel();
+      }
+
+      updateToggleLabel();
       toggle?.addEventListener("click", () => {
         const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
         setTheme(currentTheme === "dark" ? "light" : "dark");

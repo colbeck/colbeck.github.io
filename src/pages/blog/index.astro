@@ -8,10 +8,8 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort((a, 
 
 <BaseLayout title="Blog | Cole Becker">
   <section class="page-shell narrow-shell">
-    <p class="eyebrow">Blog</p>
-    <p class="lead">A dedicated space for
-    my general thoughts on AI, research directions that interest me, and ideas worth developing.
-     </p>
+    <h1 class="page-title">Essays</h1>
+    <p class="lead">Thoughts on research and ideas in progress. See <a href="/writing/">all writing</a>, including paper notes.</p>
   </section>
 
   <section class="page-shell section">

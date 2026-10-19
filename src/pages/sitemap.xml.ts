@@ -1,7 +1,7 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 
-const staticPages = ["/", "/research/", "/publications/", "/blog/", "/tutorials/", "/notes/"];
+const staticPages = ["/", "/writing/", "/publications/", "/blog/", "/notes/"];
 
 function escapeXml(value: string) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");

@@ -1,15 +1,15 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostList from "../components/PostList.astro";
 import ProfileVisual from "../components/ProfileVisual.astro";
+import PublicationList from "../components/PublicationList.astro";
+import { publications, upcomingPublications } from "../data/publications";
+import { getWriting } from "../lib/writing";
 
-const byDate = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
-  b.data.date.valueOf() - a.data.date.valueOf();
-const blogPosts = (await getCollection("blog", ({ data }) => !data.draft)).sort(byDate).slice(0, 2);
+const recentWriting = (await getWriting()).slice(0, 2);
 
 const homepageDescription =
-  "Cole Becker is a PhD student at MIT LIDS working on dynamical measure transport, sampling, generative modeling, optimization, and control.";
+  "Cole Becker is a PhD candidate at MIT LIDS working on faster sampling and adapting generative models through optimization and control.";
 
 const personStructuredData = {
   "@context": "https://schema.org",
@@ -18,7 +18,7 @@ const personStructuredData = {
   name: "Cole Becker",
   url: "https://colebecker.me/",
   image: "https://colebecker.me/assets/profile.jpg",
-  jobTitle: "PhD student",
+  jobTitle: "PhD candidate",
   affiliation: [
     {
       "@type": "CollegeOrUniversity",
@@ -53,40 +53,48 @@ const personStructuredData = {
 };
 ---
 
-<BaseLayout title="Cole Becker | MIT PhD Student" description={homepageDescription} structuredData={personStructuredData}>
+<BaseLayout title="Cole Becker | MIT" description={homepageDescription} structuredData={personStructuredData}>
   <section class="page-shell hero">
     <div>
-      <p class="eyebrow">PhD student</p>
+      <p class="eyebrow">PhD candidate · MIT LIDS</p>
       <h1>Cole Becker</h1>
       <p class="lead">
-        I am a third-year <strong>PhD student</strong> at LIDS at MIT, where I am grateful to be advised by
-        <a href="https://www.mit.edu/~parrilo/">Pablo Parrilo</a> and supported by the NSF GRFP fellowship. I also
-        work with <a href="https://asu.mit.edu/">Asu Ozdaglar</a> and
-        <a href="https://locomotion.csail.mit.edu/russt.html">Russ Tedrake</a>.
+        I’m a PhD candidate at MIT’s <a href="https://lids.mit.edu/">LIDS</a>,
+        advised by <a href="https://www.mit.edu/~parrilo/">Pablo Parrilo</a> and supported by an NSF Graduate Research Fellowship.
       </p>
       <p class="lead">
-        My research interests are broadly in learning algorithms for generative modeling and dynamical measure transport.
-        I am also interested in connections between sampling and optimization.
+        I work on making generative models faster and easier to adapt, using ideas from sampling,
+        optimization, and control. I also collaborate with <a href="https://asu.mit.edu/">Asu Ozdaglar</a>{" "}
+        and <a href="https://locomotion.csail.mit.edu/russt.html">Russ Tedrake</a>.
       </p>
       <p class="lead">
-        Before MIT, I was an undergraduate and master's student at Princeton University, where I was fortunate to work with
-        <a href="https://stella.to/">Bartolomeo Stellato</a> and <a href="https://aaa.princeton.edu/">Amir Ali Ahmadi</a>.
+        Before MIT, I completed my undergraduate and master’s degrees at Princeton, working with <a href="https://stella.to/">Bartolomeo Stellato</a>{" "}
+        and <a href="https://aaa.princeton.edu/">Amir Ali Ahmadi</a>.
       </p>
       <div class="social-links" aria-label="External profiles">
-        <a href="https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en">🎓 Google Scholar</a>
-        <a href="https://x.com/colemobecker">𝕏 Twitter</a>
-        <a href="https://www.linkedin.com/in/cole-becker-559102129/">💼 LinkedIn</a>
+        <a href="mailto:colbeck@mit.edu">Email</a>
+        <a href="https://scholar.google.com/citations?user=ox1F6VIAAAAJ&hl=en">Google Scholar</a>
+        <a href="https://www.linkedin.com/in/cole-becker-559102129/">LinkedIn</a>
+        <a href="https://x.com/colemobecker">Twitter</a>
+        <a href="/assets/cv.pdf">CV</a>
       </div>
-      <p class="email-line">✉️ colbeck [at] mit [dot] edu</p>
     </div>
     <ProfileVisual />
   </section>
 
-  <section class="page-shell section">
+  <section class="page-shell section" aria-labelledby="selected-papers">
     <div class="section-header">
-      <h2>Recent Blog Posts</h2>
-      <p>Higher-level writing on AI, research directions, and ideas in progress.</p>
+      <h2 id="selected-papers">Selected publications</h2>
+      <a href="/publications/">All publications →</a>
     </div>
-    <PostList entries={blogPosts} basePath="/blog" />
+    <PublicationList entries={[...upcomingPublications, ...publications.slice(0, 2)]} showSummary={false} />
+  </section>
+
+  <section class="page-shell section" aria-labelledby="recent-writing">
+    <div class="section-header">
+      <h2 id="recent-writing">Recent writing</h2>
+      <a href="/writing/">All writing →</a>
+    </div>
+    <PostList entries={recentWriting} headingLevel="h3" />
   </section>
 </BaseLayout>

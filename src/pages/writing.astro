@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostList from "../components/PostList.astro";
+import { getWriting } from "../lib/writing";
+
+const entries = await getWriting();
+---
+
+<BaseLayout title="Writing | Cole Becker" description="Essays, paper notes, and tutorials on sampling, generative modeling, and optimization by Cole Becker.">
+  <section class="page-shell narrow-shell">
+    <h1 class="page-title">Writing</h1>
+    <p class="lead">Notes from my research and reading, and ideas I’m working through.</p>
+  </section>
+  <section class="page-shell narrow-shell section" aria-label="Essays, paper notes, and tutorials">
+    <PostList entries={entries} />
+  </section>
+</BaseLayout>
